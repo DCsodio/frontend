@@ -6,139 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TEST MQTT</title>
 
-  <link rel="stylesheet" href="css/main.min.css">
+  <link rel="stylesheet" href="css/main.css">
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
 
-  <style>
-    /* ── Estadística diaria ─────────────────────────────────── */
-    .stats-btn-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 1.5rem;
-    }
 
-    .btn-stats {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      padding: .65rem 1.6rem;
-      background: linear-gradient(135deg, #3273dc 0%, #209cee 100%);
-      color: #fff;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: .95rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(50,115,220,.35);
-      transition: transform .15s, box-shadow .15s, opacity .15s;
-    }
-    .btn-stats:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(50,115,220,.45); }
-    .btn-stats:active { transform: translateY(0);    box-shadow: 0 2px 8px  rgba(50,115,220,.3);  }
-    .btn-stats:disabled { opacity: .65; cursor: not-allowed; transform: none; }
-    .btn-stats .mdi { font-size: 1.15rem; }
-
-    /* panel */
-    #stats-panel {
-      margin-top: 1.6rem;
-      display: none;          /* shown via JS */
-    }
-
-    .stats-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-    .stats-title {
-      font-family: 'Nunito', sans-serif;
-      font-weight: 800;
-      font-size: 1rem;
-      color: #363636;
-      display: flex;
-      align-items: center;
-      gap: .4rem;
-    }
-    .stats-date {
-      font-size: .82rem;
-      color: #7a7a7a;
-      background: #f5f5f5;
-      border-radius: 20px;
-      padding: .2rem .75rem;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-    }
-
-    .stat-card {
-      border-radius: 12px;
-      padding: 1.1rem 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: .9rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,.07);
-      transition: transform .15s, box-shadow .15s;
-    }
-    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,.1); }
-
-    .stat-card.card-total   { background: linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%); border-left: 4px solid #3273dc; }
-    .stat-card.card-avg     { background: linear-gradient(135deg, #f0fff4 0%, #e6ffee 100%); border-left: 4px solid #23d160; }
-    .stat-card.card-max     { background: linear-gradient(135deg, #fff8f0 0%, #ffeee0 100%); border-left: 4px solid #ff6b35; }
-    .stat-card.card-min     { background: linear-gradient(135deg, #f0f8ff 0%, #e0f0ff 100%); border-left: 4px solid #209cee; }
-
-    .stat-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 1.35rem;
-    }
-    .card-total .stat-icon { background: #3273dc22; color: #3273dc; }
-    .card-avg   .stat-icon { background: #23d16022; color: #23d160; }
-    .card-max   .stat-icon { background: #ff6b3522; color: #ff6b35; }
-    .card-min   .stat-icon { background: #209cee22; color: #209cee; }
-
-    .stat-body {}
-    .stat-label {
-      font-size: .75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: #7a7a7a;
-      margin-bottom: .15rem;
-    }
-    .stat-value {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #363636;
-      line-height: 1.1;
-    }
-    .stat-sub {
-      font-size: .76rem;
-      color: #888;
-      margin-top: .15rem;
-    }
-
-    /* error */
-    .stats-error {
-      margin-top: 1rem;
-      padding: .8rem 1rem;
-      background: #fff5f5;
-      border-left: 4px solid #ff3860;
-      border-radius: 8px;
-      color: #cc0f35;
-      font-size: .88rem;
-      display: none;
-    }
-  </style>
 </head>
 <body>
 <div id="app">
@@ -249,7 +122,7 @@
         <div class="level-left">
           <div class="level-item"><h1 class="title">Grafico</h1></div>
         </div>
-        <div class="level-right" style="display: none;">
+        <div class="level-right is-hidden">
           <div class="level-item"></div>
         </div>
       </div>
@@ -272,13 +145,12 @@
 
       <div class="card-content">
         <div class="chart-area">
-          <div style="height: 100%;">
+          <div class="chart-inner">
             <div class="chartjs-size-monitor">
               <div class="chartjs-size-monitor-expand"><div></div></div>
               <div class="chartjs-size-monitor-shrink"><div></div></div>
             </div>
-            <canvas id="big-line-chart" width="2992" height="1000" class="chartjs-render-monitor"
-              style="display: block; height: 400px; width: 1197px;"></canvas>
+            <canvas id="big-line-chart" width="2992" height="1000" class="chartjs-render-monitor"></canvas>
           </div>
         </div>
 
