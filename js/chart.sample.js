@@ -72,9 +72,12 @@ var REFRESCO_MS = 10000;
 
 function formatearTimestamp(ts) {
   var d = new Date(ts);
-  return d.getHours().toString().padStart(2, '0') + ':' +
-         d.getMinutes().toString().padStart(2, '0') + ':' +
-         d.getSeconds().toString().padStart(2, '0');
+  return d.toLocaleTimeString('es-AR', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit',
+    hour12: false 
+  });
 }
 
 function cargarLecturas() {

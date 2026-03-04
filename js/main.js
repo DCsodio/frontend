@@ -91,18 +91,33 @@ function fetchStats(btn) {
     }
 
     var d = result.data;
-    if (d.total_lecturas > 0) {
-    document.getElementById('stat-avg').textContent = parseFloat(d.promedio).toFixed(1) + ' °C';
+
+if (d.total_lecturas > 0) {
+    // 1. Convertir los strings ISO que vienen del backend a objetos Date
+    var fechaMax = new Date(d.maxima.hora);
+    var fechaMin = new Date(d.minima.hora);
+
+    // 2. Formatear la hora local (HH:mm)
+    var horaMaxLocal = fechaMax.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    var horaMinLocal = fechaMin.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+    // 3. Actualizar el DOM
     document.getElementById('stats-fecha').textContent    = d.fecha;
     document.getElementById('stat-total').textContent     = d.total_lecturas;
     document.getElementById('stat-avg').textContent       = parseFloat(d.promedio).toFixed(1) + ' °C';
+    
     document.getElementById('stat-max').textContent       = parseFloat(d.maxima.temperatura).toFixed(1) + ' °C';
-    document.getElementById('stat-max-hora').textContent  = 'a las ' + d.maxima.hora;
+    document.getElementById('stat-max-hora').textContent  = 'a las ' + horaMaxLocal;
+    
     document.getElementById('stat-min').textContent       = parseFloat(d.minima.temperatura).toFixed(1) + ' °C';
-    document.getElementById('stat-min-hora').textContent  = 'a las ' + d.minima.hora;
-    } else {
-      document.getElementById('stats-fecha').textContent = "Sin datos hoy";
-    }
+    document.getElementById('stat-min-hora').textContent  = 'a las ' + horaMinLocal;
+
+} else {
+    document.getElementById('stats-fecha').textContent = "Sin datos hoy";
+    // Opcional: Limpiar los otros campos si no hay datos
+    document.getElementById('stat-total').textContent = "0";
+    document.getElementById('stat-avg').textContent = "-";
+}
    
     panelEl.style.display = 'block';
   })
