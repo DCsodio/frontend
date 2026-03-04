@@ -61,3 +61,50 @@ if (usernameEl) {
   var storedUsername = localStorage.getItem('username') || 'Usuario';
   usernameEl.textContent = storedUsername;
 }
+
+var API = "https://backend-ff8w.onrender.com";
+
+function fetchStats(btn) {
+  var token   = localStorage.getItem('token');
+  var errorEl = document.getElementById('stats-error');
+  var panelEl = document.getElementById('stats-panel');
+
+  errorEl.style.display = 'none';
+  panelEl.style.display = 'none';
+  btn.disabled  = true;
+  btn.innerHTML = '<span class="mdi mdi-loading mdi-spin"></span> Cargando...';
+
+  fetch(API + '/stats/diaria', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  })
+  .then(function(res) {
+    return res.json().then(function(data) { return { ok: res.ok, data: data }; });
+  })
+  .then(function(result) {
+    btn.disabled  = false;
+    btn.innerHTML = '<span class="mdi mdi-chart-bar"></span> Ver estadística del día';
+
+    if (!result.ok) {
+      errorEl.textContent    = result.data.detail || 'No se pudo obtener la estadística.';
+      errorEl.style.display  = 'block';
+      return;
+    }
+
+    var d = result.data;
+    document.getElementById('stats-fecha').textContent    = d.fecha;
+    document.getElementById('stat-total').textContent     = d.total_lecturas;
+    document.getElementById('stat-avg').textContent       = parseFloat(d.promedio).toFixed(1) + ' °C';
+    document.getElementById('stat-max').textContent       = parseFloat(d.maxima.temperatura).toFixed(1) + ' °C';
+    document.getElementById('stat-max-hora').textContent  = 'a las ' + d.maxima.hora;
+    document.getElementById('stat-min').textContent       = parseFloat(d.minima.temperatura).toFixed(1) + ' °C';
+    document.getElementById('stat-min-hora').textContent  = 'a las ' + d.minima.hora;
+
+    panelEl.style.display = 'block';
+  })
+  .catch(function() {
+    btn.disabled  = false;
+    btn.innerHTML = '<span class="mdi mdi-chart-bar"></span> Ver estadística del día';
+    errorEl.textContent   = 'No se pudo conectar con el servidor.';
+    errorEl.style.display = 'block';
+  });
+}

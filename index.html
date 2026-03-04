@@ -4,64 +4,170 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TEST MQTT</title> <!-- Titulo -->
+  <title>TEST MQTT</title>
 
-  <!-- Bulma is included -->
   <link rel="stylesheet" href="css/main.min.css">
-
-  <!-- Fonts -->
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+
+  <style>
+    /* ── Estadística diaria ─────────────────────────────────── */
+    .stats-btn-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .btn-stats {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .65rem 1.6rem;
+      background: linear-gradient(135deg, #3273dc 0%, #209cee 100%);
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: .95rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(50,115,220,.35);
+      transition: transform .15s, box-shadow .15s, opacity .15s;
+    }
+    .btn-stats:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(50,115,220,.45); }
+    .btn-stats:active { transform: translateY(0);    box-shadow: 0 2px 8px  rgba(50,115,220,.3);  }
+    .btn-stats:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+    .btn-stats .mdi { font-size: 1.15rem; }
+
+    /* panel */
+    #stats-panel {
+      margin-top: 1.6rem;
+      display: none;          /* shown via JS */
+    }
+
+    .stats-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .stats-title {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #363636;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+    .stats-date {
+      font-size: .82rem;
+      color: #7a7a7a;
+      background: #f5f5f5;
+      border-radius: 20px;
+      padding: .2rem .75rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      border-radius: 12px;
+      padding: 1.1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,.07);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,.1); }
+
+    .stat-card.card-total   { background: linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%); border-left: 4px solid #3273dc; }
+    .stat-card.card-avg     { background: linear-gradient(135deg, #f0fff4 0%, #e6ffee 100%); border-left: 4px solid #23d160; }
+    .stat-card.card-max     { background: linear-gradient(135deg, #fff8f0 0%, #ffeee0 100%); border-left: 4px solid #ff6b35; }
+    .stat-card.card-min     { background: linear-gradient(135deg, #f0f8ff 0%, #e0f0ff 100%); border-left: 4px solid #209cee; }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.35rem;
+    }
+    .card-total .stat-icon { background: #3273dc22; color: #3273dc; }
+    .card-avg   .stat-icon { background: #23d16022; color: #23d160; }
+    .card-max   .stat-icon { background: #ff6b3522; color: #ff6b35; }
+    .card-min   .stat-icon { background: #209cee22; color: #209cee; }
+
+    .stat-body {}
+    .stat-label {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #7a7a7a;
+      margin-bottom: .15rem;
+    }
+    .stat-value {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #363636;
+      line-height: 1.1;
+    }
+    .stat-sub {
+      font-size: .76rem;
+      color: #888;
+      margin-top: .15rem;
+    }
+
+    /* error */
+    .stats-error {
+      margin-top: 1rem;
+      padding: .8rem 1rem;
+      background: #fff5f5;
+      border-left: 4px solid #ff3860;
+      border-radius: 8px;
+      color: #cc0f35;
+      font-size: .88rem;
+      display: none;
+    }
+  </style>
 </head>
 <body>
 <div id="app">
   <nav id="navbar-main" class="navbar is-fixed-top">
-    
-    
-    <div class="navbar-brand"> <!--bloque que contiene la barra de busqueda-->
-
+    <div class="navbar-brand">
       <a class="navbar-item is-hidden-desktop jb-aside-mobile-toggle">
         <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
       </a>
-      <!-- <a href="www.google.com">google</a>
-            actua como un link, pero en este caso los parametros que 
-            se agregan en class son de js (es un item, oculto en pc, jb-... es de js
-            que activa la barra la teral)-->
       <div class="navbar-item has-control">
         <div class="control"><input placeholder="Search everywhere..." class="input"></div>
       </div>
-      <!-- eso es la barra de busqueda en la parte superior-->
     </div>
-    <!-- ESTA SECCION ES LA BARRA DE BUSQUEDA, EL ICONO APARECE ADENTRO DE LA CAJA SUPERIOR-->
 
-    
     <div class="navbar-brand is-right">
       <a class="navbar-item is-hidden-desktop jb-navbar-menu-toggle" data-target="navbar-menu">
         <span class="icon"><i class="mdi mdi-dots-vertical"></i></span>
       </a>
     </div>
 
-    <!-- ESTO SOLO SE VE EN CELULAR(is-hidden-desktop) SON TRES PUNTITOS
-          ACTIVA EL NAVBAR MENU-->
-
-
     <div class="navbar-menu fadeIn animated faster" id="navbar-menu">
       <div class="navbar-end">
-
-
-
         <div class="navbar-item has-dropdown has-dropdown-with-icons has-divider has-user-avatar is-hoverable">
-
           <a class="navbar-link is-arrowless">
             <div class="is-user-avatar">
               <img src="img/logoHEXA64.jpg" alt="HEXA 64">
             </div>
-
             <div class="is-user-name"><span id="navbar-username">...</span></div>
             <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
           </a>
-          
           <div class="navbar-dropdown">
             <a href="profile.html" class="navbar-item">
               <span class="icon"><i class="mdi mdi-account"></i></span>
@@ -86,15 +192,9 @@
           <span class="icon"><i class="mdi mdi-logout"></i></span>
           <span>Log out</span>
         </a>
-      
       </div>
     </div>
   </nav>
-
-  <!--ESTO ES EL MENU LA PARTE DE ARRIBA, BARRA DE BUSQUEDA,
-      AYUDA, LOG OUT, PERFIL-->
-
-
 
   <aside class="aside is-placed-left is-expanded">
     <div class="aside-tools">
@@ -111,9 +211,6 @@
             <span class="menu-item-label">Dashboard</span>
           </a>
         </li>
-      </ul>
-      <ul class="menu-list">
-        
       </ul>
       <p class="menu-label">About</p>
       <ul class="menu-list">
@@ -133,9 +230,6 @@
     </div>
   </aside>
 
-
-
-  
   <section class="section is-title-bar">
     <div class="level">
       <div class="level-left">
@@ -149,16 +243,11 @@
     </div>
   </section>
 
-
-
-
   <section class="hero is-hero-bar">
     <div class="hero-body">
       <div class="level">
         <div class="level-left">
-          <div class="level-item"><h1 class="title">
-            Grafico
-          </h1></div>
+          <div class="level-item"><h1 class="title">Grafico</h1></div>
         </div>
         <div class="level-right" style="display: none;">
           <div class="level-item"></div>
@@ -167,63 +256,105 @@
     </div>
   </section>
 
-
-
   <section class="section is-main-section">
-    <div class="tile is-ancestor">
-  
-    </div>
+    <div class="tile is-ancestor"></div>
 
-
-
-
+    <!-- Chart card -->
     <div class="card">
-
       <header class="card-header">
-        <p class="card-header-title"> <span class="icon"><i class="mdi mdi-thermometer mdi-24px"></i></span>temperatura</p>
+        <p class="card-header-title">
+          <span class="icon"><i class="mdi mdi-thermometer mdi-24px"></i></span>temperatura
+        </p>
         <a href="#" class="card-header-icon">
           <span class="icon"><i class="mdi mdi-reload mdi-24px"></i></span>
         </a>
       </header>
-      <!-- seccion superior del grafico-->
-
 
       <div class="card-content">
         <div class="chart-area">
           <div style="height: 100%;">
             <div class="chartjs-size-monitor">
-              <div class="chartjs-size-monitor-expand">
-                <div></div>
-              </div>
-              <div class="chartjs-size-monitor-shrink">
-                <div></div>
-              </div>
+              <div class="chartjs-size-monitor-expand"><div></div></div>
+              <div class="chartjs-size-monitor-shrink"><div></div></div>
             </div>
-            <canvas id="big-line-chart" width="2992" height="1000" class="chartjs-render-monitor" style="display: block; height: 400px; width: 1197px;"></canvas>
+            <canvas id="big-line-chart" width="2992" height="1000" class="chartjs-render-monitor"
+              style="display: block; height: 400px; width: 1197px;"></canvas>
           </div>
         </div>
+
+        <!-- ── Botón estadística ── -->
+        <div class="stats-btn-wrap">
+          <button class="btn-stats" id="btn-stats" onclick="fetchStats(this)">
+            <span class="mdi mdi-chart-bar"></span>
+            Ver estadística del día
+          </button>
+        </div>
+
+        <!-- ── Error ── -->
+        <div id="stats-error" class="stats-error"></div>
+
+        <!-- ── Panel de estadísticas ── -->
+        <div id="stats-panel">
+          <div class="stats-header">
+            <span class="stats-title">
+              <span class="mdi mdi-calendar-today"></span> Resumen del día
+            </span>
+            <span class="stats-date" id="stats-fecha">—</span>
+          </div>
+
+          <div class="stats-grid">
+            <!-- Lecturas totales -->
+            <div class="stat-card card-total">
+              <div class="stat-icon"><span class="mdi mdi-counter"></span></div>
+              <div class="stat-body">
+                <div class="stat-label">Lecturas</div>
+                <div class="stat-value" id="stat-total">—</div>
+                <div class="stat-sub">registros del día</div>
+              </div>
+            </div>
+
+            <!-- Promedio -->
+            <div class="stat-card card-avg">
+              <div class="stat-icon"><span class="mdi mdi-thermometer-lines"></span></div>
+              <div class="stat-body">
+                <div class="stat-label">Promedio</div>
+                <div class="stat-value" id="stat-avg">—</div>
+                <div class="stat-sub">temperatura media</div>
+              </div>
+            </div>
+
+            <!-- Máxima -->
+            <div class="stat-card card-max">
+              <div class="stat-icon"><span class="mdi mdi-thermometer-high"></span></div>
+              <div class="stat-body">
+                <div class="stat-label">Máxima</div>
+                <div class="stat-value" id="stat-max">—</div>
+                <div class="stat-sub" id="stat-max-hora">—</div>
+              </div>
+            </div>
+
+            <!-- Mínima -->
+            <div class="stat-card card-min">
+              <div class="stat-icon"><span class="mdi mdi-thermometer-low"></span></div>
+              <div class="stat-body">
+                <div class="stat-label">Mínima</div>
+                <div class="stat-value" id="stat-min">—</div>
+                <div class="stat-sub" id="stat-min-hora">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ── /Panel estadísticas ── -->
+
       </div>
-      
     </div>
   </section>
-
-
-
 
   <footer class="footer">
     <div class="container-fluid">
       <div class="level">
         <div class="level-left">
-          <div class="level-item">
-            © 2026, HEXA 64
-          </div>
-          <!--
-          <div class="level-item">
-            <a href="https://github.com/vikdiesel/admin-one-bulma-dashboard" style="height: 20px">
-              <img src="https://img.shields.io/github/v/release/vikdiesel/admin-one-bulma-dashboard?color=%23999">
-            </a>
-          </div>
-        -->
+          <div class="level-item">© 2026, HEXA 64</div>
         </div>
         <div class="level-right">
           <div class="level-item">
@@ -237,6 +368,7 @@
   </footer>
 </div>
 
+<!-- Modal -->
 <div id="sample-modal" class="modal">
   <div class="modal-background jb-modal-close"></div>
   <div class="modal-card">
@@ -256,14 +388,12 @@
   <button class="modal-close is-large jb-modal-close" aria-label="close"></button>
 </div>
 
-<!--esto es cuando presiono el boton de eliminar cliente-->
-
-<!-- Scripts below are for demo only -->
 <script type="text/javascript" src="js/main.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 <script type="text/javascript" src="js/chart.sample.js"></script>
-
-<!-- Icons below are for demo only. Feel free to use any icon pack. Docs: https://bulma.io/documentation/elements/icon/ -->
 <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+
+<script type="text/javascript" src="js/stats.js"></script>
+
 </body>
 </html>
