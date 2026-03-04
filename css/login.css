@@ -1,0 +1,221 @@
+  * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(0, 209, 178, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(32, 156, 238, 0.10) 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 80%, rgba(0, 209, 178, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .login-wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 1.5rem;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeDown 0.5s ease both;
+    }
+
+    .login-header img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 209, 178, 0.4);
+      margin-bottom: 1rem;
+      box-shadow: 0 0 20px rgba(0, 209, 178, 0.2);
+    }
+
+    .login-header h1 {
+      color: #fff;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin: 0;
+    }
+
+    .login-header p {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      animation: fadeUp 0.5s ease 0.1s both;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 1.75rem;
+      gap: 4px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 0.55rem 1rem;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .auth-tab.is-active {
+      background: rgba(0, 209, 178, 0.15);
+      color: #00D1B2;
+      box-shadow: 0 0 0 1px rgba(0, 209, 178, 0.3);
+    }
+
+    .field-label {
+      display: block;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 0.4rem;
+    }
+
+    .auth-input {
+      width: 100%;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 0.7rem 1rem 0.7rem 2.6rem;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .auth-input:focus {
+      border-color: rgba(0, 209, 178, 0.5);
+      box-shadow: 0 0 0 3px rgba(0, 209, 178, 0.1);
+    }
+
+    .auth-input::placeholder { color: rgba(255,255,255,0.2); }
+
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 68%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.3);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+
+    /* Hint debajo del input */
+    .input-hint {
+      margin-top: 0.3rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      padding-left: 0.25rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.75rem;
+      background: #00D1B2;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      margin-top: 0.5rem;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(0, 209, 178, 0.25);
+    }
+
+    .btn-submit:hover {
+      background: #00c4a7;
+      box-shadow: 0 6px 20px rgba(0, 209, 178, 0.35);
+    }
+
+    .btn-submit:active { transform: scale(0.98); }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .auth-message {
+      margin-top: 1rem;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: none;
+      animation: fadeUp 0.3s ease both;
+    }
+    .iconochip {
+      position: relative;
+      top: 23px
+    }
+    .auth-message.is-error {
+      background: rgba(255, 56, 96, 0.15);
+      border: 1px solid rgba(255, 56, 96, 0.3);
+      color: #ff6b88;
+      display: block;
+    }
+
+    .auth-message.is-success {
+      background: rgba(0, 209, 178, 0.15);
+      border: 1px solid rgba(0, 209, 178, 0.3);
+      color: #00D1B2;
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-panel { display: none; }
+    .form-panel.is-active { display: block; animation: fadeUp 0.3s ease both; }
