@@ -74,7 +74,7 @@ function fetchStats(btn) {
   btn.disabled  = true;
   btn.innerHTML = '<span class="mdi mdi-loading mdi-spin"></span> Cargando...';
 
-  fetch(API + '/stats/diaria', {
+  fetch(API + '/estadisticas/hoy', {
     headers: { 'Authorization': 'Bearer ' + token }
   })
   .then(function(res) {
@@ -91,6 +91,8 @@ function fetchStats(btn) {
     }
 
     var d = result.data;
+    if (d.total_lecturas > 0) {
+    document.getElementById('stat-avg').textContent = parseFloat(d.promedio).toFixed(1) + ' °C';
     document.getElementById('stats-fecha').textContent    = d.fecha;
     document.getElementById('stat-total').textContent     = d.total_lecturas;
     document.getElementById('stat-avg').textContent       = parseFloat(d.promedio).toFixed(1) + ' °C';
@@ -98,7 +100,10 @@ function fetchStats(btn) {
     document.getElementById('stat-max-hora').textContent  = 'a las ' + d.maxima.hora;
     document.getElementById('stat-min').textContent       = parseFloat(d.minima.temperatura).toFixed(1) + ' °C';
     document.getElementById('stat-min-hora').textContent  = 'a las ' + d.minima.hora;
-
+    } else {
+      document.getElementById('stats-fecha').textContent = "Sin datos hoy";
+    }
+   
     panelEl.style.display = 'block';
   })
   .catch(function() {
