@@ -95,7 +95,7 @@ function cargarLecturas() {
   })
   .then(function(lecturas) {
     if (!lecturas || !Array.isArray(lecturas) || lecturas.length === 0) return;
-    chart.data.labels = lecturas.map(function(l) { return formatearTimestamp(l.timestamp); });
+    chart.data.labels = lecturas.map(function(l) { return formatearTimestamp(l.hora); });
     chart.data.datasets[0].data = lecturas.map(function(l) { return l.temperatura; });
     chart.update();
   })
