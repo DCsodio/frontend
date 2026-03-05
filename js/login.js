@@ -7,6 +7,12 @@ var esNuevo = urlParams.get('es_nuevo');
 
 if (googleToken) {
   localStorage.setItem('token', googleToken);
+
+  var googleNombre = urlParams.get('nombre');        // ← NUEVO
+  if (googleNombre) {
+    localStorage.setItem('display_name', googleNombre); // ← NUEVO
+  }
+  
   if (esNuevo === 'true') {
     // Usuario nuevo de Google, todavía no tiene device_id
     window.location.href = 'setup-device.html';

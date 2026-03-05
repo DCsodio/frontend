@@ -70,10 +70,11 @@ document.querySelectorAll('[data-logout]').forEach(function(btn) {
 /* ── Username en navbar ────────────────────────────────────────────────────── */
 var usernameEl = document.getElementById('navbar-username');
 if (usernameEl) {
-  var storedUsername = localStorage.getItem('username') || 'Usuario';
-  usernameEl.textContent = storedUsername;
+  var displayName = localStorage.getItem('display_name') 
+                 || localStorage.getItem('username') 
+                 || 'Usuario';
+  usernameEl.textContent = displayName;
 }
-
 var API = "https://backend-ff8w.onrender.com";
 
 /* ── Badge de dispositivo ─────────────────────────────────────────────────── */
