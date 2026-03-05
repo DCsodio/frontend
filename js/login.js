@@ -1,9 +1,26 @@
 var API = "https://backend-ff8w.onrender.com";
 
-if (localStorage.getItem("token")) {
-  window.location.href = "index.html";
+// ── Capturar token si Google nos redirigió de vuelta ──────────────────────────
+var urlParams = new URLSearchParams(window.location.search);
+var googleToken = urlParams.get('token');
+var esNuevo = urlParams.get('es_nuevo');
+
+if (googleToken) {
+  localStorage.setItem('token', googleToken);
+  if (esNuevo === 'true') {
+    // Usuario nuevo de Google, todavía no tiene device_id
+    window.location.href = 'setup-device.html';
+  } else {
+    window.location.href = 'index.html';
+  }
 }
 
+// ── Si ya hay sesión activa, ir directo al panel ──────────────────────────────
+if (localStorage.getItem('token')) {
+  window.location.href = 'index.html';
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   var allTabs = document.querySelectorAll('.auth-tab');
   var allPanels = document.querySelectorAll('.form-panel');
@@ -17,6 +34,7 @@ function switchTab(tab) {
   clearMessages();
 }
 
+// ── Mensajes ──────────────────────────────────────────────────────────────────
 function showMessage(id, text, type) {
   var el = document.getElementById(id);
   el.textContent = text;
@@ -35,6 +53,7 @@ function setLoading(btn, loading) {
   btn.style.opacity = loading ? '0.7' : '1';
 }
 
+// ── Login normal ──────────────────────────────────────────────────────────────
 function doLogin(btn) {
   var username = document.getElementById('login-username').value.trim();
   var password = document.getElementById('login-password').value;
@@ -71,6 +90,12 @@ function doLogin(btn) {
   });
 }
 
+// ── Login con Google ──────────────────────────────────────────────────────────
+function doLoginGoogle() {
+  window.location.href = API + '/auth/google/login';
+}
+
+// ── Registro ──────────────────────────────────────────────────────────────────
 function doRegister(btn) {
   var username = document.getElementById('reg-username').value.trim();
   var password = document.getElementById('reg-password').value;
@@ -128,6 +153,7 @@ function doRegister(btn) {
   });
 }
 
+// ── Enter para submit ─────────────────────────────────────────────────────────
 document.addEventListener('keydown', function(e) {
   if (e.key !== 'Enter') return;
   var activePanel = document.querySelector('.form-panel.is-active');
