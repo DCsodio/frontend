@@ -4,14 +4,160 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TEST MQTT</title>
+  <title>HEXA 64</title>
 
   <link rel="stylesheet" href="css/main.css">
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
 
+  <style>
+    /* ── Modal device-id ─────────────────────────────────── */
+    #device-modal .modal-card {
+      border-radius: 12px;
+      overflow: hidden;
+      max-width: 420px;
+      width: 100%;
+    }
+    #device-modal .modal-card-head {
+      background: #00D1B2;
+      border-bottom: none;
+      padding: 20px 24px;
+    }
+    #device-modal .modal-card-title {
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #device-modal .delete {
+      background: rgba(255,255,255,0.3);
+    }
+    #device-modal .modal-card-body {
+      padding: 28px 24px 16px;
+    }
+    #device-modal .modal-card-foot {
+      border-top: 1px solid #f0f0f0;
+      padding: 16px 24px;
+      background: #fafafa;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
 
+    .device-current {
+      background: #f0fdf9;
+      border: 1.5px solid #00D1B2;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: #333;
+    }
+    .device-current .mdi {
+      color: #00D1B2;
+      font-size: 1.2rem;
+    }
+    .device-current strong {
+      color: #00D1B2;
+    }
+    .device-current.no-device {
+      background: #fff8f0;
+      border-color: #ffb347;
+    }
+    .device-current.no-device .mdi {
+      color: #ffb347;
+    }
+    .device-current.no-device strong {
+      color: #ffb347;
+    }
+
+    .device-field label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .device-field .input {
+      border-radius: 8px;
+      border: 1.5px solid #ddd;
+      font-size: 0.97rem;
+      padding: 10px 14px;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+    .device-field .input:focus {
+      border-color: #00D1B2;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 209, 178, 0.12);
+    }
+    .device-hint {
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 6px;
+    }
+
+    #device-msg {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      min-height: 20px;
+    }
+    #device-msg.is-success { color: #00D1B2; }
+    #device-msg.is-error   { color: #ff3860; }
+
+    .btn-save-device {
+      background: #00D1B2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 22px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    .btn-save-device:hover { background: #00b89c; }
+    .btn-save-device:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-cancel-device {
+      background: transparent;
+      color: #888;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-cancel-device:hover { background: #f0f0f0; }
+
+    /* Badge en el menú si no tiene device */
+    .menu-badge {
+      background: #ffb347;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 1px 7px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+  </style>
 </head>
 <body>
 <div id="app">
@@ -46,9 +192,9 @@
               <span class="icon"><i class="mdi mdi-account"></i></span>
               <span>My Profile</span>
             </a>
-            <a class="navbar-item">
-              <span class="icon"><i class="mdi mdi-settings"></i></span>
-              <span>Settings</span>
+            <a class="navbar-item" onclick="abrirModalDevice()">
+              <span class="icon"><i class="mdi mdi-chip"></i></span>
+              <span>Configurar dispositivo</span>
             </a>
             <hr class="navbar-divider">
             <a class="navbar-item" data-logout="true">
@@ -57,10 +203,6 @@
             </a>
           </div>
         </div>
-        <a href="https://justboil.me/bulma-admin-template/free-html-dashboard/" title="About" class="navbar-item has-divider is-desktop-icon-only">
-          <span class="icon"><i class="mdi mdi-help-circle-outline"></i></span>
-          <span>About</span>
-        </a>
         <a title="Log out" class="navbar-item is-desktop-icon-only" data-logout="true">
           <span class="icon"><i class="mdi mdi-logout"></i></span>
           <span>Log out</span>
@@ -82,6 +224,13 @@
           <a href="index.html" class="is-active router-link-active has-icon">
             <span class="icon"><i class="mdi mdi-desktop-mac"></i></span>
             <span class="menu-item-label">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="has-icon" onclick="abrirModalDevice(); return false;">
+            <span class="icon"><i class="mdi mdi-chip"></i></span>
+            <span class="menu-item-label">Dispositivo</span>
+            <span class="menu-badge" id="device-badge" style="display:none">!</span>
           </a>
         </li>
       </ul>
@@ -122,9 +271,6 @@
         <div class="level-left">
           <div class="level-item"><h1 class="title">Grafico</h1></div>
         </div>
-        <div class="level-right is-hidden">
-          <div class="level-item"></div>
-        </div>
       </div>
     </div>
   </section>
@@ -154,7 +300,7 @@
           </div>
         </div>
 
-        <!-- ── Botón estadística ── -->
+        <!-- Botón estadística -->
         <div class="stats-btn-wrap">
           <button class="btn-stats" id="btn-stats" onclick="fetchStats(this)">
             <span class="mdi mdi-chart-bar"></span>
@@ -162,10 +308,10 @@
           </button>
         </div>
 
-        <!-- ── Error ── -->
+        <!-- Error -->
         <div id="stats-error" class="stats-error"></div>
 
-        <!-- ── Panel de estadísticas ── -->
+        <!-- Panel de estadísticas -->
         <div id="stats-panel">
           <div class="stats-header">
             <span class="stats-title">
@@ -175,7 +321,6 @@
           </div>
 
           <div class="stats-grid">
-            <!-- Lecturas totales -->
             <div class="stat-card card-total">
               <div class="stat-icon"><span class="mdi mdi-counter"></span></div>
               <div class="stat-body">
@@ -184,8 +329,6 @@
                 <div class="stat-sub">registros del día</div>
               </div>
             </div>
-
-            <!-- Promedio -->
             <div class="stat-card card-avg">
               <div class="stat-icon"><span class="mdi mdi-thermometer-lines"></span></div>
               <div class="stat-body">
@@ -194,8 +337,6 @@
                 <div class="stat-sub">temperatura media</div>
               </div>
             </div>
-
-            <!-- Máxima -->
             <div class="stat-card card-max">
               <div class="stat-icon"><span class="mdi mdi-thermometer-high"></span></div>
               <div class="stat-body">
@@ -204,8 +345,6 @@
                 <div class="stat-sub" id="stat-max-hora">—</div>
               </div>
             </div>
-
-            <!-- Mínima -->
             <div class="stat-card card-min">
               <div class="stat-icon"><span class="mdi mdi-thermometer-low"></span></div>
               <div class="stat-body">
@@ -216,8 +355,6 @@
             </div>
           </div>
         </div>
-        <!-- ── /Panel estadísticas ── -->
-
       </div>
     </div>
   </section>
@@ -240,7 +377,43 @@
   </footer>
 </div>
 
-<!-- Modal -->
+<!-- ── Modal configurar dispositivo ────────────────────────────────────────── -->
+<div id="device-modal" class="modal">
+  <div class="modal-background" onclick="cerrarModalDevice()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">
+        <span class="mdi mdi-chip"></span> Configurar dispositivo
+      </p>
+      <button class="delete" aria-label="close" onclick="cerrarModalDevice()"></button>
+    </header>
+    <section class="modal-card-body">
+
+      <!-- Estado actual -->
+      <div class="device-current no-device" id="device-current-info">
+        <span class="mdi mdi-alert-circle"></span>
+        <span>Sin dispositivo configurado</span>
+      </div>
+
+      <!-- Campo nuevo device_id -->
+      <div class="device-field">
+        <label>ID del dispositivo (ESP32)</label>
+        <input id="device-input" type="text" class="input" placeholder="ej: ESP32-001" autocomplete="off">
+        <p class="device-hint">Ingresá el ID único de tu ESP32. Solo podrás ver los datos de ese sensor.</p>
+      </div>
+
+      <div id="device-msg"></div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="btn-cancel-device" onclick="cerrarModalDevice()">Cancelar</button>
+      <button class="btn-save-device" onclick="guardarDevice(this)">
+        <span class="mdi mdi-content-save"></span> Guardar
+      </button>
+    </footer>
+  </div>
+</div>
+
+<!-- Modal genérico -->
 <div id="sample-modal" class="modal">
   <div class="modal-background jb-modal-close"></div>
   <div class="modal-card">
@@ -250,7 +423,6 @@
     </header>
     <section class="modal-card-body">
       <p>This will permanently delete <b>Some Object</b></p>
-      <p>This is sample modal</p>
     </section>
     <footer class="modal-card-foot">
       <button class="button jb-modal-close">Cancel</button>
@@ -263,8 +435,6 @@
 <script type="text/javascript" src="js/main.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 <script type="text/javascript" src="js/chart.sample.js"></script>
-<link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
-
 <script type="text/javascript" src="js/stats.js"></script>
 
 </body>
